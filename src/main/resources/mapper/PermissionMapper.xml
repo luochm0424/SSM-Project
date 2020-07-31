@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lcm.mapper.PermissionMapper">
+
+    <resultMap id="BaseResultMap" type="com.lcm.pojo.Permission">
+        <!--@Table permission-->
+        <result property="permissionId" column="permission_id" jdbcType="INTEGER"/>
+        <result property="permissionName" column="permission_name" jdbcType="VARCHAR"/>
+        <result property="permissionDesc" column="permission_desc" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="BaseResultMap">
+        select
+          permission_id, permission_name, permission_desc
+        from ssmbuild.permission
+        where permission_id = #{permissionId}
+    </select>
+    <select id="queryPermissionByUserName" resultMap="BaseResultMap">
+SELECT permission.* from permission,`user`,userpermission where permission.permission_id = userpermission.permission_id
+and `user`.userId =userpermission.user_id and username=#{username}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="BaseResultMap">
+        select
+          permission_id, permission_name, permission_desc
+        from ssmbuild.permission
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="BaseResultMap">
+        select
+          permission_id, permission_name, permission_desc
+        from ssmbuild.permission
+        <where>
+            <if test="permissionId != null">
+                and permission_id = #{permissionId}
+            </if>
+            <if test="permissionName != null and permissionName != ''">
+                and permission_name = #{permissionName}
+            </if>
+            <if test="permissionDesc != null and permissionDesc != ''">
+                and permission_desc = #{permissionDesc}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="permissionId" useGeneratedKeys="true">
+        insert into ssmbuild.permission(permission_name, permission_desc)
+        values (#{permissionName}, #{permissionDesc})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update ssmbuild.permission
+        <set>
+            <if test="permissionName != null and permissionName != ''">
+                permission_name = #{permissionName},
+            </if>
+            <if test="permissionDesc != null and permissionDesc != ''">
+                permission_desc = #{permissionDesc},
+            </if>
+        </set>
+        where permission_id = #{permissionId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from ssmbuild.permission where permission_id = #{permissionId}
+    </delete>
+
+</mapper>
